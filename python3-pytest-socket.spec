@@ -6,7 +6,7 @@ Summary:	Pytest Plugin to disable socket calls during tests
 Summary(pl.UTF-8):	Wtyczka pytesta blokująca odwołania do gniazd w trakcie testów
 Name:		python3-pytest-socket
 Version:	0.8.1
-Release:	1
+Release:	2
 License:	MIT
 Group:		Libraries/Python
 #Source0Download: https://pypi.org/simple/pytest-socket/
@@ -48,10 +48,11 @@ podczas testów, aby zapobiec odwołaniom do sieci.
 
 %if %{with tests}
 # expects localhost to resolve to both 127.0.0.1 and ::1, depends on /etc/hosts
+# the others connect to public hosts (google.com, http.codes), no network on builders
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
 PYTEST_PLUGINS=anyio.pytest_plugin,pytest_benchmark.plugin,pytest_socket \
 PYTHONPATH=$(pwd)/src \
-%{__python3} -m pytest tests -k 'not test_single_cli_arg_connect_disabled_hostname_resolved'
+%{__python3} -m pytest tests -k 'not (test_single_cli_arg_connect_disabled_hostname_resolved or test_parametrize_with_socket_enabled_and_allow_hosts or test_global_disable_and_allow_host or test_urllib_succeeds_by_default or test_enabled_urllib_succeeds)'
 %endif
 
 %install
